@@ -1,0 +1,15 @@
+version: '3'
+services:
+  #MySQL Service
+  db:
+    image: mysql:5.7.22
+    container_name: mysql-flask
+    ports:
+      - "${SQLALCHEMY_PORT}:3306"
+    volumes:
+      - ./data/:/var/lib/mysql/
+    environment:
+      - MYSQL_ROOT_PASSWORD=${SQLALCHEMY_ROOT_PASSWORD}
+      - MYSQL_USER=${SQLALCHEMY_USERNAME}
+      - MYSQL_PASSWORD=${SQLALCHEMY_PASSWORD}
+      - MYSQL_DATABASE=${SQLALCHEMY_DBNAME}
