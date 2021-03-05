@@ -1,10 +1,11 @@
 import abc
 
-from flask_restful import Resource
+from flask_restx import Resource
 
 
 class BaseRoute(Resource):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.controller = self.get_controller()()
 
     @abc.abstractmethod

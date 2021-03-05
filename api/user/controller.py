@@ -1,3 +1,5 @@
+from typing import Dict
+
 from flask import request
 
 from api.core import BaseController, constants, ultils
@@ -26,12 +28,10 @@ class UserController(BaseController):
         result = ultils.paginate_serializer(page=page, size=size, data=users, data_key_name='users')
         return self.success(data=result)
 
-    def create(self):
-        data = request.form
+    def create(self, data: Dict):
         return self.success(data=self.user_repository.create(data=data).as_dict())
 
-    def update(self, id):
-        data = request.form
+    def update(self, id, data: Dict):
         user = self.user_repository.update(id, data=data)
         if user:
             user = user.as_dict()

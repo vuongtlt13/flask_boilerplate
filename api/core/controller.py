@@ -1,4 +1,6 @@
 import abc
+from typing import Dict
+
 from extensions import response
 
 
@@ -12,11 +14,11 @@ class BaseController:
         pass
 
     @abc.abstractmethod
-    def create(self):
+    def create(self, data: Dict):
         pass
 
     @abc.abstractmethod
-    def update(self, id):
+    def update(self, id, data: Dict):
         pass
 
     @abc.abstractmethod
