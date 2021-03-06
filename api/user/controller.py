@@ -2,7 +2,7 @@ from typing import Dict
 
 from flask import request
 
-from api.core import BaseController, constants, ultils
+from api.core import BaseController, constants, utils
 from api.user.repository import UserRepository
 
 
@@ -25,7 +25,7 @@ class UserController(BaseController):
         for index, user in enumerate(users):
             users[index] = user.as_dict()
 
-        result = ultils.paginate_serializer(page=page, size=size, data=users, data_key_name='users')
+        result = utils.paginate_serializer(page=page, size=size, data=users, data_key_name='users')
         return self.success(data=result)
 
     def create(self, data: Dict):

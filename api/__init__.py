@@ -1,1 +1,1 @@
-from .user.route import CreateUserRoute, UserCommonRoute
+from .user.route import *

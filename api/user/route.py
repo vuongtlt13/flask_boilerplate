@@ -5,6 +5,11 @@ from extensions import api
 
 ns = api.namespace('users', description='User operations')
 
+__all__ = [
+    "CreateUserRoute",
+    "UserCommonRoute"
+]
+
 
 @ns.route('')
 class CreateUserRoute(BaseRoute):

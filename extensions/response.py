@@ -5,22 +5,30 @@ from flask_restx import fields
 from extensions import api
 
 
-def success(message="", data=None):
-    return {
+def success(message="", data=None, marshal_with: bool = True):
+    resp_data = {
         'status': True,
         'data': data,
         'message': message,
         'error': None
     }
+    if marshal_with:
+        return resp_data
+
+    return make_response(json.dumps(resp_data), 200)
 
 
-def error(message="", data=None, error=None, code: int = 400):
-    return {
+def error(message="", data=None, error=None, code: int = 400, marshal_with: bool = True):
+    resp_data = {
         'status': False,
         'data': data,
         'message': message,
         'error': error
     }
+    if marshal_with:
+        return resp_data
+
+    return make_response(json.dumps(resp_data), code)
 
 
 ResponseSchema = api.model('ResponseSchema', {
