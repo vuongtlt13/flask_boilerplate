@@ -20,7 +20,7 @@ def create_app(conf=None) -> Flask:
         list_route_cli.init_app(app)
 
     with app.app_context():
-        sqlacodegen.code_gen(table_name="users")
+        # sqlacodegen.code_gen(table_name="users")
         sqlacodegen.code_gen(table_name="posts")
     # return
     return app

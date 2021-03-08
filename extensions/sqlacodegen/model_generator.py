@@ -92,11 +92,10 @@ class ModelGenerator(Model):
         return None
 
     def render_relationships(self) -> str:
-        res = '\n'
+        res = ''
         # Render relationships
-        for attr, relationship in self.attributes.items():
-            if isinstance(relationship.column, Relationship):
-                res += '    {0} = {1}\n'.format(attr, relationship.render())
+        for attr, relationship in self.relations.items():
+            res += '{0} = {1}\n'.format(attr, relationship.render())
         return res
 
     def _init_relations(self):

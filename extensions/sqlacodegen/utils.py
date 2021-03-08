@@ -79,7 +79,10 @@ def pascal_case(words: str) -> str:
 
 
 def singular_form(word: str) -> str:
-    return inflect_engine.singular_noun(word)
+    singular = inflect_engine.singular_noun(word)
+    if isinstance(singular, bool):
+        return word
+    return singular
 
 
 def convert_to_class_name(snake_case_words: str) -> str:
@@ -93,7 +96,10 @@ def get_column_names_from_constraint(constraint):
 
 
 def plural_form(word: str) -> str:
-    return inflect_engine.plural_noun(word)
+    plural = inflect_engine.plural_noun(word)
+    if isinstance(plural, bool):
+        return word
+    return plural
 
 
 def get_constraint_sort_key(constraint):
