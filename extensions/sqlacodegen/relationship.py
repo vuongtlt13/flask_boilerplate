@@ -1,5 +1,7 @@
 from collections import OrderedDict
+from typing import Dict
 
+from mako.template import Template
 from sqlalchemy import PrimaryKeyConstraint, UniqueConstraint, ForeignKeyConstraint
 
 from extensions.sqlacodegen import utils
@@ -11,20 +13,22 @@ class Relationship(object):
         self.source_cls = source_cls
         self.target_cls = target_cls
         self.kwargs = OrderedDict()
+        self.preferred_name = None
         self.backref_name = utils._underscore(self.source_cls)
 
     def render(self):
-        text = 'db.relationship('
-        args = [repr(self.target_cls)]
+        mytemplate = Template(filename='extensions/sqlacodegen/templates/relationship.mako')
+        return mytemplate.render(**self.get_variables())
 
+    def _render_options(self):
+        args = []
         if 'secondaryjoin' in self.kwargs:
-            text += '\n        '
-            delimiter, end = ',\n        ', '\n    )'
+            delimiter = ',\n        '
         else:
-            delimiter, end = ', ', ')'
+            delimiter = ', '
 
         args.extend([key + '=' + value for key, value in self.kwargs.items()])
-        return text + delimiter.join(args) + end
+        return delimiter.join(args)
 
     def make_backref(self, relationships, classes):
         backref = self.backref_name
@@ -48,6 +52,13 @@ class Relationship(object):
                     backref = rel.backref_name
                     rel.backref_name = rel.target_cls.lower() + '_' + backref
                     rel.kwargs['backref'] = repr(rel.backref_name)
+
+    def get_variables(self) -> Dict:
+        return {
+            'attribute': self.preferred_name,
+            'target_cls': self.target_cls,
+            'relation_options': self._render_options()
+        }
 
 
 class ManyToOneRelationship(Relationship):

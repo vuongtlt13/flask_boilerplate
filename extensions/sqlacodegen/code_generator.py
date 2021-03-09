@@ -1,5 +1,7 @@
+import os
 import sys
 from collections import defaultdict
+from typing import Dict, List
 
 from mako.template import Template
 from sqlalchemy import ForeignKeyConstraint
@@ -9,7 +11,10 @@ from extensions.sqlacodegen.model_generator import ModelGenerator
 
 
 class CodeGenerator(object):
-    def __init__(self, metadata, table_name: str, class_name: str = None,
+    def __init__(self, metadata,
+                 tables: List[str] = None,
+                 ignore_tables: List[str] = None,
+                 class_names: Dict = None,
                  ignore_cols=None,
                  no_indexes: bool = False,
                  no_constraints: bool = False,
@@ -19,20 +24,27 @@ class CodeGenerator(object):
                  no_tables=False
                  ):
         """
-        :param metadata:
-        :param table_name:
-        :param class_name:
-        :param no_indexes:
-        :param no_constraints:
-        :param no_joined:
-        :param ignore_cols:
-        :param no_classes:
-        :param no_comments:
-        :param no_tables:
+
+        Args:
+            metadata:
+            tables:
+            ignore_tables:
+            class_names:
+            ignore_cols:
+            no_indexes:
+            no_constraints:
+            no_joined:
+            no_classes:
+            no_comments:
+            no_tables:
         """
         super(CodeGenerator, self).__init__()
 
         # exclude these column names from consideration when generating association tables
+        self.class_names = class_names if class_names else {}
+        self.ignore_tables = ignore_tables if ignore_tables else []
+        self.ignore_tables = list(set(self.ignore_tables + ['alembic_version']))
+        self.tables = tables
         self.metadata = metadata
         self._ignore_columns = ignore_cols or [] + utils.get_timestamps_columns()
 
@@ -42,17 +54,12 @@ class CodeGenerator(object):
         self._init_association_tables()
         # Iterate through the tables and create model classes when possible
         self.models = []
-        self.table_name = table_name
         classes = {}
         for table in sorted(metadata.tables.values(), key=lambda t: (t.schema or '', t.name)):
-            # Support for Alembic and sqlalchemy-migrate -- never expose the schema version tables
-            dest_class_name = None
-            if table.name == table_name:
-                dest_class_name = class_name
             model = ModelGenerator(
                 table,
-                class_name=dest_class_name,
                 ignore_cols=self._ignore_columns,
+                class_names=self.class_names,
                 association_tables=self.association_tables[table.name],
             )
             classes[model.class_name] = model
@@ -76,13 +83,26 @@ class CodeGenerator(object):
                 tablename = sorted(fk_constraints, key=utils.get_constraint_sort_key)[0].elements[0].column.table.name
                 self.association_tables[tablename].append(table)
 
-    def render(self, outfile=sys.stdout):
-        # Render the collected imports
-        res_model = None
+    def render(self, root_directory="."):
         for model in self.models:
-            if model.table.name == self.table_name:
-                res_model = model
-                break
-        model_variables = res_model.get_variables()
-        mytemplate = Template(filename='extensions/sqlacodegen/templates/model.mako')
-        print(mytemplate.render(**model_variables).rstrip("\n"), file=outfile)
+            if self.tables is None:
+                if self.ignore_tables and model.table.name in self.ignore_tables:
+                    continue
+            else:
+                if model.table.name not in self.tables:
+                    continue
+
+            outfile = self.get_outfile(root_directory=root_directory, class_name=model.class_name)
+            model_variables = model.get_variables()
+            mytemplate = Template(filename='extensions/sqlacodegen/templates/model.mako')
+            res = mytemplate.render(**model_variables).rstrip("\n")
+            print(res)
+            print(res, file=outfile)
+            outfile.close()
+
+    def get_outfile(self, root_directory: str, class_name: str):
+        directory = f'{root_directory}/{class_name.lower()}'
+        file_path = f"{directory}/model.py"
+        if not os.path.exists(directory):
+            os.mkdir(directory)
+        return open(file_path, 'w+', encoding='utf8')

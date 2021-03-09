@@ -62,7 +62,7 @@ def _underscore(name):
 
 def _is_model_descendant(model_a, model_b):
     """Check to see if model class A inherits from another model class B"""
-    if model_a.name == model_b.name:
+    if model_a.class_name == model_b.class_name:
         return True
     if not model_b.children:
         return False

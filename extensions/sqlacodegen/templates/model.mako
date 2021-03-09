@@ -4,5 +4,12 @@ from extensions import db
 
 class ${class_name}(BaseModel):
     __tablename__ = "${table_name}"
-    ${columns}
-    ${(hidden_columns + "\n") if hidden_columns else "\n"}${"\t" + (relationships if relationships else "\n")}
+% for column in columns:
+    ${column}
+% endfor
+% for hidden_column in hidden_columns:
+    ${hidden_column}
+% endfor
+% for relationship in relationships:
+    ${relationship}
+% endfor

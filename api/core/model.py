@@ -6,8 +6,8 @@ from extensions import db
 
 
 class TimestampMixin:
-    created_at = db.Column(db.DateTime, default=datetime.now)
-    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    created_at = db.Column(db.TIMESTAMP, default=datetime.now)
+    updated_at = db.Column(db.TIMESTAMP, default=datetime.now, onupdate=datetime.now)
 
 
 class SerializerMixin:

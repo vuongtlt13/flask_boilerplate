@@ -125,7 +125,8 @@ class ColumnGenerator(object):
             self.column.index = True
             kwarg.append('index')
         if self.column.server_default:
-            server_default = 'server_default=db.FetchedValue()'
+            default_value = self.column.server_default.arg.text
+            server_default = f'server_default={default_value}'
 
         comment = getattr(self.column, 'comment', None)
         return ', '.join(

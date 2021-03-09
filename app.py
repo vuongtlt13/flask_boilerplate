@@ -20,8 +20,11 @@ def create_app(conf=None) -> Flask:
         list_route_cli.init_app(app)
 
     with app.app_context():
-        # sqlacodegen.code_gen(table_name="users")
-        sqlacodegen.code_gen(table_name="posts")
+        # sqlacodegen.code_gen(tables=["apps"], ignore_tables=['alembic_version'], root_directory="api")
+        # sqlacodegen.code_gen(tables=["companies"], ignore_tables=['alembic_version'], root_directory="api")
+        # sqlacodegen.code_gen(tables=["services"], ignore_tables=['alembic_version'], root_directory="api")
+        # sqlacodegen.code_gen(tables=["users"], ignore_tables=['alembic_version'], root_directory="api")
+        pass
     # return
     return app
 

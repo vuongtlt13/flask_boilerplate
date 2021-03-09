@@ -1,0 +1,1 @@
+${attribute} = db.relationship('${target_cls}', ${relation_options})
