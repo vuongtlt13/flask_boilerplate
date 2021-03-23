@@ -1,7 +1,7 @@
 from flask import Flask
 
 from config import get_config
-from extensions import db, list_route_cli, migrate, api, excpetion, sqlacodegen
+from extensions import db, list_route_cli, migrate, api, excpetion, vgenerator
 import api as api_route
 
 
@@ -16,14 +16,14 @@ def create_app(conf=None) -> Flask:
     api.init_app(app)
     excpetion.init_app(app)
     if conf.DEBUG:
-        sqlacodegen.init_app(app)
+        vgenerator.init_app(app)
         list_route_cli.init_app(app)
 
     with app.app_context():
-        # sqlacodegen.code_gen(tables=["apps"], ignore_tables=['alembic_version'], root_directory="api")
-        # sqlacodegen.code_gen(tables=["companies"], ignore_tables=['alembic_version'], root_directory="api")
-        # sqlacodegen.code_gen(tables=["services"], ignore_tables=['alembic_version'], root_directory="api")
-        # sqlacodegen.code_gen(tables=["users"], ignore_tables=['alembic_version'], root_directory="api")
+        # vgenerator.code_gen(tables=["apps"], ignore_tables=['alembic_version'], root_directory="api")
+        # vgenerator.code_gen(tables=["companies"], ignore_tables=['alembic_version'], root_directory="api")
+        # vgenerator.code_gen(tables=["services"], ignore_tables=['alembic_version'], root_directory="api")
+        # vgenerator.code_gen(tables=["users"], ignore_tables=['alembic_version'], root_directory="api")
         pass
     # return
     return app

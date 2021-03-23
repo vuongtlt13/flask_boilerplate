@@ -6,8 +6,8 @@ from typing import Dict, List
 from mako.template import Template
 from sqlalchemy import ForeignKeyConstraint
 
-from extensions.sqlacodegen import utils
-from extensions.sqlacodegen.model_generator import ModelGenerator
+from extensions.vgenerator import utils
+from extensions.vgenerator.model import ModelGenerator
 
 
 class CodeGenerator(object):
@@ -16,12 +16,7 @@ class CodeGenerator(object):
                  ignore_tables: List[str] = None,
                  class_names: Dict = None,
                  ignore_cols=None,
-                 no_indexes: bool = False,
-                 no_constraints: bool = False,
-                 no_joined: bool = False,
-                 no_classes=False,
                  no_comments=False,
-                 no_tables=False
                  ):
         """
 
@@ -31,12 +26,7 @@ class CodeGenerator(object):
             ignore_tables:
             class_names:
             ignore_cols:
-            no_indexes:
-            no_constraints:
-            no_joined:
-            no_classes:
             no_comments:
-            no_tables:
         """
         super(CodeGenerator, self).__init__()
 
@@ -51,29 +41,14 @@ class CodeGenerator(object):
         self.no_comments = no_comments
 
         self.association_tables = defaultdict(lambda: [])
-        self._init_association_tables()
+        self.__init_association_tables()
+
         # Iterate through the tables and create model classes when possible
         self.models = []
-        classes = {}
-        for table in sorted(metadata.tables.values(), key=lambda t: (t.schema or '', t.name)):
-            model = ModelGenerator(
-                table,
-                ignore_cols=self._ignore_columns,
-                class_names=self.class_names,
-                association_tables=self.association_tables[table.name],
-            )
-            classes[model.class_name] = model
-            self.models.append(model)
+        self.__init_models()
+        self.__init_controller()
 
-        # Resolve any relationships conflicts where one
-        # target class might inherit from another
-        for model in classes.values():
-            visited = []
-            for relationship in model.relations.values():
-                relationship.make_backref(visited, classes)
-                visited.append(relationship)
-
-    def _init_association_tables(self):
+    def __init_association_tables(self):
         for table in self.metadata.tables.values():
             # Link tables have exactly two foreign key constraints and all columns are involved in them
             # except for special columns like id, inserted, and updated
@@ -94,7 +69,7 @@ class CodeGenerator(object):
 
             outfile = self.get_outfile(root_directory=root_directory, class_name=model.class_name)
             model_variables = model.get_variables()
-            mytemplate = Template(filename='extensions/sqlacodegen/templates/model.mako')
+            mytemplate = Template(filename='extensions/vgenerator/templates/model.mako')
             res = mytemplate.render(**model_variables).rstrip("\n")
             print(res)
             print(res, file=outfile)
@@ -106,3 +81,26 @@ class CodeGenerator(object):
         if not os.path.exists(directory):
             os.mkdir(directory)
         return open(file_path, 'w+', encoding='utf8')
+
+    def __init_models(self):
+        classes = {}
+        for table in sorted(self.metadata.tables.values(), key=lambda t: (t.schema or '', t.name)):
+            model = ModelGenerator(
+                table,
+                ignore_cols=self._ignore_columns,
+                class_names=self.class_names,
+                association_tables=self.association_tables[table.name],
+            )
+            classes[model.class_name] = model
+            self.models.append(model)
+
+        # Resolve any relationships conflicts where one
+        # target class might inherit from another
+        for model in classes.values():
+            visited = []
+            for relationship in model.relations.values():
+                relationship.make_backref(visited, classes)
+                visited.append(relationship)
+
+    def __init_controller(self):
+        pass

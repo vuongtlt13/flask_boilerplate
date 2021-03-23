@@ -10,7 +10,7 @@ class BaseController:
         pass
 
     @abc.abstractmethod
-    def get(self, id):
+    def get(self, _id):
         pass
 
     @abc.abstractmethod
@@ -18,11 +18,11 @@ class BaseController:
         pass
 
     @abc.abstractmethod
-    def update(self, id, data: Dict):
+    def update(self, _id, data: Dict):
         pass
 
     @abc.abstractmethod
-    def delete(self, id):
+    def delete(self, _id):
         pass
 
     def success(self, message="", data=None):

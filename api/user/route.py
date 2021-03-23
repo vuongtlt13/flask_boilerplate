@@ -37,16 +37,16 @@ class UserCommonRoute(BaseRoute):
 
     @ns.doc('get_user_by_id')
     @ns.marshal_with(UserResponse)
-    def get(self, id):
-        return self.controller.get(id)
+    def get(self, _id):
+        return self.controller.get(_id)
 
     @ns.doc("update_user_by_id")
     @ns.marshal_with(UserResponse)
     @ns.expect(UpdateUserRequest)
-    def put(self, id):
+    def put(self, _id):
         data = api.payload
-        return self.controller.update(id=id, data=data)
+        return self.controller.update(_id=_id, data=data)
 
     @ns.doc("delete_user_by_id")
-    def delete(self, id):
-        return self.controller.delete(id=id)
+    def delete(self, _id):
+        return self.controller.delete(_id=_id)

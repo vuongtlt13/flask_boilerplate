@@ -3,9 +3,9 @@ from typing import Dict, List
 from sqlalchemy import Boolean, ForeignKeyConstraint, Table
 from sqlalchemy.util import OrderedDict
 
-from extensions.sqlacodegen import utils
-from extensions.sqlacodegen.column_generator import ColumnGenerator
-from extensions.sqlacodegen.relationship import ManyToManyRelationship, ManyToOneRelationship
+from extensions.vgenerator import utils
+from extensions.vgenerator.column import ColumnGenerator
+from extensions.vgenerator.relationship import ManyToManyRelationship, ManyToOneRelationship
 
 
 class Model(object):
@@ -51,6 +51,7 @@ class ModelGenerator(Model):
 
     def get_variables(self) -> Dict:
         return {
+            "datetime_now": utils.get_datetime_now(),
             "class_name": self.class_name,
             "table_name": self.table.name,
             "columns": self.render_columns(),

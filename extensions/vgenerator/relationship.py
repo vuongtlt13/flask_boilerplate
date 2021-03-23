@@ -4,7 +4,7 @@ from typing import Dict
 from mako.template import Template
 from sqlalchemy import PrimaryKeyConstraint, UniqueConstraint, ForeignKeyConstraint
 
-from extensions.sqlacodegen import utils
+from extensions.vgenerator import utils
 
 
 class Relationship(object):
@@ -17,7 +17,7 @@ class Relationship(object):
         self.backref_name = utils._underscore(self.source_cls)
 
     def render(self):
-        mytemplate = Template(filename='extensions/sqlacodegen/templates/relationship.mako')
+        mytemplate = Template(filename='extensions/vgenerator/templates/relationship.mako')
         return mytemplate.render(**self.get_variables())
 
     def _render_options(self):

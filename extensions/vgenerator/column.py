@@ -4,7 +4,7 @@ from mako.template import Template
 from sqlalchemy import Column, UniqueConstraint, ForeignKey, ForeignKeyConstraint, CheckConstraint
 from sqlalchemy.sql.elements import TextClause
 
-from extensions.sqlacodegen import utils
+from extensions.vgenerator import utils
 
 
 class ColumnGenerator(object):
@@ -12,7 +12,7 @@ class ColumnGenerator(object):
         self.column = column
 
     def render(self):
-        mytemplate = Template(filename='extensions/sqlacodegen/templates/attribute.mako')
+        mytemplate = Template(filename='extensions/vgenerator/templates/attribute.mako')
         return mytemplate.render(**self.get_variables())
 
     def get_variables(self):

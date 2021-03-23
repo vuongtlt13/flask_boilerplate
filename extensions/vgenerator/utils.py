@@ -1,12 +1,11 @@
-import inspect
 import sys
+from datetime import datetime
 from keyword import iskeyword
 from typing import List
 import inflect
 import re
 
-from sqlalchemy import CheckConstraint, ForeignKeyConstraint, Enum, UniqueConstraint, ForeignKey
-from sqlalchemy.sql.elements import TextClause
+from sqlalchemy import CheckConstraint, ForeignKeyConstraint
 
 _re_boolean_check_constraint = re.compile(r"(?:(?:.*?)\.)?(.*?) IN \(0, 1\)")
 _re_column_name = re.compile(r'(?:(["`]?)(?:.*)\1\.)?(["`]?)(.*)\2')
@@ -27,15 +26,6 @@ def get_timestamps_columns() -> List[str]:
         "created_at",
         "updated_at"
     ]
-
-
-class _DummyInflectEngine(object):
-    def singular_noun(self, noun):
-        return noun
-    def plural_noun(self, noun):  # needed for backrefs
-        import inflect
-        inflect_engine = inflect.engine()
-        return inflect_engine.plural_noun(noun)
 
 
 def _convert_to_valid_identifier(name):
@@ -106,3 +96,7 @@ def get_constraint_sort_key(constraint):
     if isinstance(constraint, CheckConstraint):
         return 'C{0}'.format(constraint.sqltext)
     return constraint.__class__.__name__[0] + repr(get_column_names_from_constraint(constraint))
+
+
+def get_datetime_now() -> str:
+    return str(datetime.utcnow()) + "Z"
