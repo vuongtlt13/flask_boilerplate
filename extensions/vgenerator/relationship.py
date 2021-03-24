@@ -1,24 +1,19 @@
 from collections import OrderedDict
 from typing import Dict
-
-from mako.template import Template
 from sqlalchemy import PrimaryKeyConstraint, UniqueConstraint, ForeignKeyConstraint
 
 from extensions.vgenerator import utils
+from extensions.vgenerator.base import BaseGenerator
 
 
-class Relationship(object):
+class Relationship(BaseGenerator):
     def __init__(self, source_cls, target_cls):
-        super(Relationship, self).__init__()
+        super(Relationship, self).__init__(source_cls)
         self.source_cls = source_cls
         self.target_cls = target_cls
         self.kwargs = OrderedDict()
         self.preferred_name = None
         self.backref_name = utils._underscore(self.source_cls)
-
-    def render(self):
-        mytemplate = Template(filename='extensions/vgenerator/templates/relationship.mako')
-        return mytemplate.render(**self.get_variables())
 
     def _render_options(self):
         args = []
@@ -59,6 +54,12 @@ class Relationship(object):
             'target_cls': self.target_cls,
             'relation_options': self._render_options()
         }
+
+    def template_file(self):
+        return 'extensions/vgenerator/templates/relationship.mako'
+
+    def output_filename(self):
+        return None
 
 
 class ManyToOneRelationship(Relationship):

@@ -7,6 +7,7 @@ from mako.template import Template
 from sqlalchemy import ForeignKeyConstraint
 
 from extensions.vgenerator import utils
+from extensions.vgenerator.controller import ControllerGenerator
 from extensions.vgenerator.model import ModelGenerator
 
 
@@ -44,8 +45,10 @@ class CodeGenerator(object):
         self.__init_association_tables()
 
         # Iterate through the tables and create model classes when possible
-        self.models = []
+        self.models: List[ModelGenerator] = []
         self.__init_models()
+
+        self.controllers: List[ControllerGenerator] = []
         self.__init_controller()
 
     def __init_association_tables(self):
@@ -59,28 +62,8 @@ class CodeGenerator(object):
                 self.association_tables[tablename].append(table)
 
     def render(self, root_directory="."):
-        for model in self.models:
-            if self.tables is None:
-                if self.ignore_tables and model.table.name in self.ignore_tables:
-                    continue
-            else:
-                if model.table.name not in self.tables:
-                    continue
-
-            outfile = self.get_outfile(root_directory=root_directory, class_name=model.class_name)
-            model_variables = model.get_variables()
-            mytemplate = Template(filename='extensions/vgenerator/templates/model.mako')
-            res = mytemplate.render(**model_variables).rstrip("\n")
-            print(res)
-            print(res, file=outfile)
-            outfile.close()
-
-    def get_outfile(self, root_directory: str, class_name: str):
-        directory = f'{root_directory}/{class_name.lower()}'
-        file_path = f"{directory}/model.py"
-        if not os.path.exists(directory):
-            os.mkdir(directory)
-        return open(file_path, 'w+', encoding='utf8')
+        self.__render_objs(self.models, root_directory=root_directory)
+        self.__render_objs(self.controllers, root_directory=root_directory)
 
     def __init_models(self):
         classes = {}
@@ -103,4 +86,16 @@ class CodeGenerator(object):
                 visited.append(relationship)
 
     def __init_controller(self):
-        pass
+        for model in self.models:
+            self.controllers.append(ControllerGenerator(model))
+
+    def __render_objs(self, objs, root_directory="."):
+        for obj in objs:
+            if self.tables is None:
+                if self.ignore_tables and obj.table_name in self.ignore_tables:
+                    continue
+            else:
+                if obj.table_name not in self.tables:
+                    continue
+
+            obj.render(root_directory=root_directory)

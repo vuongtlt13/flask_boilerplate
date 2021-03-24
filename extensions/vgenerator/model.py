@@ -1,45 +1,29 @@
 from typing import Dict, List
-
 from sqlalchemy import Boolean, ForeignKeyConstraint, Table
 from sqlalchemy.util import OrderedDict
 
 from extensions.vgenerator import utils
+from extensions.vgenerator.base import BaseGenerator
 from extensions.vgenerator.column import ColumnGenerator
-from extensions.vgenerator.relationship import ManyToManyRelationship, ManyToOneRelationship
+from extensions.vgenerator.relationship import ManyToManyRelationship, ManyToOneRelationship, Relationship
 
 
-class Model(object):
-    def __init__(self, table: Table):
-        super(Model, self).__init__()
-        self.table = table
-        self.schema = table.schema
-
-        # Adapt column types to the most reasonable generic types (ie. VARCHAR -> String)
-        for column in table.columns:
-            cls = column.type.__class__
-            if cls.__name__ == 'TINYINT' and column.type.display_width == 1:
-                cls = Boolean
-            else:
-                for supercls in cls.__mro__:
-                    if hasattr(supercls, '__visit_name__'):
-                        cls = supercls
-                    if supercls.__name__ != supercls.__name__.upper() and not supercls.__name__.startswith('_'):
-                        break
-
-            column.type = column.type.adapt(cls)
-
-
-class ModelGenerator(Model):
-    parent_name = 'Base'
+class ModelGenerator(BaseGenerator):
+    def output_filename(self):
+        return "model"
 
     def __init__(self, table: Table, association_tables: List, class_names: Dict, ignore_cols=None):
-        super(ModelGenerator, self).__init__(table)
-        self.class_name = (class_names.get(table.name, None)) or utils.convert_to_class_name(table.name)
+        self.class_name = utils.convert_to_class_name((class_names.get(table.name, None)) or table.name)
+        super(ModelGenerator, self).__init__(self.class_name)
+        self.table = table
+        self.table_name = table.name
+        self.schema = table.schema
+        self.__pre_init()
         self.children = []
         self.ignore_cols = ignore_cols or []
         self.association_tables = association_tables
-        self.attributes = OrderedDict()
-        self.relations = OrderedDict()
+        self.attributes: Dict[str, ColumnGenerator] = OrderedDict()
+        self.relations: Dict[str, Relationship] = OrderedDict()
 
         # Assign attribute names for columns
         for column in table.columns:
@@ -47,11 +31,13 @@ class ModelGenerator(Model):
                 continue
             self.attributes[column.name] = ColumnGenerator(column)
 
-        self._init_relations(class_names)
+        self.__init_relations(class_names)
+
+    def template_file(self):
+        return 'extensions/vgenerator/templates/model.mako'
 
     def get_variables(self) -> Dict:
         return {
-            "datetime_now": utils.get_datetime_now(),
             "class_name": self.class_name,
             "table_name": self.table.name,
             "columns": self.render_columns(),
@@ -76,7 +62,7 @@ class ModelGenerator(Model):
             res.append(relationship.render())
         return res
 
-    def _init_relations(self, class_names: Dict):
+    def __init_relations(self, class_names: Dict):
         # Add many-to-one relationships
         for constraint in sorted(self.table.constraints, key=utils.get_constraint_sort_key):
             if isinstance(constraint, ForeignKeyConstraint):
@@ -94,3 +80,18 @@ class ModelGenerator(Model):
                 fk_constraints[1].elements[0].column.table.name)
             relationship_ = ManyToManyRelationship(source_cls, target_cls, association_table)
             self.relations[relationship_.preferred_name] = relationship_
+
+    def __pre_init(self):
+        # Adapt column types to the most reasonable generic types (ie. VARCHAR -> String)
+        for column in self.table.columns:
+            cls = column.type.__class__
+            if cls.__name__ == 'TINYINT' and column.type.display_width == 1:
+                cls = Boolean
+            else:
+                for supercls in cls.__mro__:
+                    if hasattr(supercls, '__visit_name__'):
+                        cls = supercls
+                    if supercls.__name__ != supercls.__name__.upper() and not supercls.__name__.startswith('_'):
+                        break
+
+            column.type = column.type.adapt(cls)

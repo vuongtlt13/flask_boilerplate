@@ -1,19 +1,21 @@
 import inspect
-
-from mako.template import Template
 from sqlalchemy import Column, UniqueConstraint, ForeignKey, ForeignKeyConstraint, CheckConstraint
 from sqlalchemy.sql.elements import TextClause
 
 from extensions.vgenerator import utils
+from extensions.vgenerator.base import BaseGenerator
 
 
-class ColumnGenerator(object):
+class ColumnGenerator(BaseGenerator):
+    def output_filename(self):
+        return None
+
     def __init__(self, column: Column):
         self.column = column
+        super().__init__("IgnoreInit")
 
-    def render(self):
-        mytemplate = Template(filename='extensions/vgenerator/templates/attribute.mako')
-        return mytemplate.render(**self.get_variables())
+    def template_file(self):
+        return 'extensions/vgenerator/templates/attribute.mako'
 
     def get_variables(self):
         return {
@@ -114,16 +116,21 @@ class ColumnGenerator(object):
 
         if self.column.key != self.column.name:
             kwarg.append('key')
+
         if self.column.primary_key:
             kwarg.append('primary_key')
+
         if not self.column.nullable and not is_sole_pk:
             kwarg.append('nullable')
+
         if is_unique:
             self.column.unique = True
             kwarg.append('unique')
         elif has_index:
             self.column.index = True
             kwarg.append('index')
+
+        server_default = None
         if self.column.server_default:
             default_value = self.column.server_default.arg.text
             server_default = f'server_default={default_value}'
