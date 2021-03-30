@@ -1,22 +1,30 @@
 import abc
 import os
-from typing import Dict
+from typing import Dict, Optional
 
 import inflection
+from mako.lookup import TemplateLookup
 from mako.template import Template
 
 from extensions.vgenerator import utils
 
 
+TEMPLATE_DIRECTORY = "extensions/vgenerator/templates/"
+
+
 class BaseGenerator(object):
-    def __init__(self, model_class_name: str):
+    def __init__(self, model_class_name: Optional[str]):
         self.class_name = model_class_name
         self._variables: Dict[str, str] = {}
-        self.__generate_common_variables(model_class_name)
+        if model_class_name:
+            self.__generate_common_variables(model_class_name)
 
     @abc.abstractmethod
     def get_variables(self) -> Dict[str, str]:
         raise NotImplemented
+
+    def template_path(self):
+        return os.path.join(TEMPLATE_DIRECTORY, self.template_file())
 
     @abc.abstractmethod
     def template_file(self):
@@ -41,7 +49,8 @@ class BaseGenerator(object):
             **self._variables,
             **self.get_variables()
         }
-        template = Template(filename=self.template_file())
+        my_lookup = TemplateLookup(directories=["."])
+        template = Template(filename=self.template_path(), lookup=my_lookup)
         res = template.render(**variables).rstrip("\n")
         if outfile:
             print(res, file=outfile)

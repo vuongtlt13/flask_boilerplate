@@ -1,0 +1,1 @@
+'${column_name}': fields.${column_type}(${column_options if column_options else ""})

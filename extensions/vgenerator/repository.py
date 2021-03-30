@@ -4,7 +4,7 @@ from extensions.vgenerator.base import BaseGenerator
 from extensions.vgenerator.model import ModelGenerator
 
 
-class ControllerGenerator(BaseGenerator):
+class RepositoryGenerator(BaseGenerator):
     def __init__(self, model: ModelGenerator):
         self.model_class_name = model.class_name
         self.table_name = model.table_name
@@ -14,7 +14,7 @@ class ControllerGenerator(BaseGenerator):
         return {}
 
     def template_file(self):
-        return "controller.mako"
+        return "repository.mako"
 
     def output_filename(self):
-        return "controller"
+        return "repository"

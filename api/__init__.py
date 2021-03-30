@@ -1,4 +1,4 @@
+from .app.route import *
+from .company.route import *
+from .service.route import *
 from .user.route import *
-from .app.model import *
-from .company.model import *
-from .service.model import *

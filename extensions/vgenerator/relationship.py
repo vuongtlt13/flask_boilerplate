@@ -8,7 +8,7 @@ from extensions.vgenerator.base import BaseGenerator
 
 class Relationship(BaseGenerator):
     def __init__(self, source_cls, target_cls):
-        super(Relationship, self).__init__(source_cls)
+        super(Relationship, self).__init__(None)
         self.source_cls = source_cls
         self.target_cls = target_cls
         self.kwargs = OrderedDict()
@@ -56,7 +56,7 @@ class Relationship(BaseGenerator):
         }
 
     def template_file(self):
-        return 'extensions/vgenerator/templates/relationship.mako'
+        return 'relationship.mako'
 
     def output_filename(self):
         return None

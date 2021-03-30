@@ -12,10 +12,11 @@ class ColumnGenerator(BaseGenerator):
 
     def __init__(self, column: Column):
         self.column = column
-        super().__init__("IgnoreInit")
+        self.is_primary = (self.column.primary_key is not None and self.column.primary_key != False)
+        super().__init__(None)
 
     def template_file(self):
-        return 'extensions/vgenerator/templates/attribute.mako'
+        return 'attribute.mako'
 
     def get_variables(self):
         return {
@@ -98,7 +99,7 @@ class ColumnGenerator(BaseGenerator):
     def _getargspec_init(self):
         method = self.column.type.__class__.__init__
         try:
-            return inspect.getargspec(method)
+            return inspect.getfullargspec(method)
         except TypeError:
             if method is object.__init__:
                 return inspect.ArgSpec(['self'], None, None, None)

@@ -34,7 +34,7 @@ class ModelGenerator(BaseGenerator):
         self.__init_relations(class_names)
 
     def template_file(self):
-        return 'extensions/vgenerator/templates/model.mako'
+        return 'model.mako'
 
     def get_variables(self) -> Dict:
         return {

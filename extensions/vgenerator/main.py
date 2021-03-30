@@ -1,14 +1,17 @@
-import os
-import sys
 from collections import defaultdict
 from typing import Dict, List
 
-from mako.template import Template
 from sqlalchemy import ForeignKeyConstraint
 
 from extensions.vgenerator import utils
 from extensions.vgenerator.controller import ControllerGenerator
 from extensions.vgenerator.model import ModelGenerator
+from extensions.vgenerator.repository import RepositoryGenerator
+from extensions.vgenerator.route import RouteGenerator
+from extensions.vgenerator.schema import SchemaGenerator
+
+
+MAIN_ROUTE_FILE = "__init__.py"
 
 
 class CodeGenerator(object):
@@ -49,7 +52,13 @@ class CodeGenerator(object):
         self.__init_models()
 
         self.controllers: List[ControllerGenerator] = []
+        self.repositories: List[RepositoryGenerator] = []
+        self.schemas: List[SchemaGenerator] = []
+        self.routes: List[RouteGenerator] = []
         self.__init_controller()
+        self.__init_repository()
+        self.__init_schema()
+        self.__init_route()
 
     def __init_association_tables(self):
         for table in self.metadata.tables.values():
@@ -64,6 +73,9 @@ class CodeGenerator(object):
     def render(self, root_directory="."):
         self.__render_objs(self.models, root_directory=root_directory)
         self.__render_objs(self.controllers, root_directory=root_directory)
+        self.__render_objs(self.repositories, root_directory=root_directory)
+        self.__render_objs(self.schemas, root_directory=root_directory)
+        self.__render_objs(self.routes, root_directory=root_directory)
 
     def __init_models(self):
         classes = {}
@@ -99,3 +111,15 @@ class CodeGenerator(object):
                     continue
 
             obj.render(root_directory=root_directory)
+
+    def __init_repository(self):
+        for model in self.models:
+            self.repositories.append(RepositoryGenerator(model))
+
+    def __init_schema(self):
+        for model in self.models:
+            self.schemas.append(SchemaGenerator(model))
+
+    def __init_route(self):
+        for model in self.models:
+            self.routes.append(RouteGenerator(model, MAIN_ROUTE_FILE))

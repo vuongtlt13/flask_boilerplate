@@ -4,10 +4,11 @@ from extensions import api
 from extensions.response import PaginateResponseSchema, ResponseSchema, paginate_model
 
 UserSchema = api.model('User', {
-    'id': fields.Integer(readonly=True, description='The user unique identifier'),
-    'username': fields.String(required=True, description='Username of user'),
-    'created_at': fields.DateTime(description='Created at'),
-    'updated_at': fields.DateTime(description='Updated at')
+    'id': fields.Integer(readOnly=True, required=True),
+    'service_id': fields.Integer(readOnly=False, required=True),
+    'username': fields.String(readOnly=False, required=True),
+    'password': fields.String(readOnly=False, required=True),
+    'is_active': fields.Boolean(readOnly=False, required=True),
 })
 
 UserResponse = api.clone('UserResponse', ResponseSchema, {
@@ -15,12 +16,17 @@ UserResponse = api.clone('UserResponse', ResponseSchema, {
 })
 
 CreateUserRequest = api.model('CreateUserRequest', {
-    'username': fields.String(required=True, description='Username of user'),
-    'password': fields.String(required=True, description='Password of user'),
+    'service_id': fields.Integer(readOnly=False, required=True),
+    'username': fields.String(readOnly=False, required=True),
+    'password': fields.String(readOnly=False, required=True),
+    'is_active': fields.Boolean(readOnly=False, required=True),
 })
 
 UpdateUserRequest = api.model('UpdateUserRequest', {
-    'password': fields.String(required=True, description='Password of user'),
+    'service_id': fields.Integer(readOnly=False, required=True),
+    'username': fields.String(readOnly=False, required=True),
+    'password': fields.String(readOnly=False, required=True),
+    'is_active': fields.Boolean(readOnly=False, required=True),
 })
 
 user_paginate_model = api.clone('user_paginate_model', paginate_model, {

@@ -2,7 +2,11 @@ from flask import Flask
 
 from config import get_config
 from extensions import db, list_route_cli, migrate, api, excpetion, vgenerator
-import api as api_route
+try:
+    import api as api_route
+except:
+    pass
+
 
 
 def create_app(conf=None) -> Flask:
