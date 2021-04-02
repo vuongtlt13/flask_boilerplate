@@ -1,4 +1,6 @@
 import inspect
+from typing import List
+
 from sqlalchemy import Column, UniqueConstraint, ForeignKey, ForeignKeyConstraint, CheckConstraint
 from sqlalchemy.sql.elements import TextClause
 
@@ -10,9 +12,10 @@ class ColumnGenerator(BaseGenerator):
     def output_filename(self):
         return None
 
-    def __init__(self, column: Column):
+    def __init__(self, column: Column, password_columns: List):
         self.column = column
         self.is_primary = (self.column.primary_key is not None and self.column.primary_key != False)
+        self.is_password_column = self.column.name in password_columns
         super().__init__(None)
 
     def template_file(self):

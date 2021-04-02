@@ -27,13 +27,17 @@ class RouteGenerator(BaseGenerator):
 
     def update_main_route_file(self, root_directory: str):
         file_path = os.path.join(root_directory, self.main_route_file)
-        with open(file_path, "a+") as f:
-            content = f.readlines()
-            lines = [x.strip() for x in content]
+        lines = []
+        with open(file_path, "r") as f:
+            for line in f:
+                lines.append(line)
+            f.close()
 
-            expected_line = self.generate_route_line()
-            if expected_line not in lines:
+        expected_line = self.generate_route_line()
+        if expected_line not in lines:
+            with open(file_path, "a") as f:
                 f.write(expected_line)
+                f.close()
 
     def generate_route_line(self):
         singular_snake_case_model_name = self._variables['singular_snake_case_model_name']

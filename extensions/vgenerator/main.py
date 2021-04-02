@@ -21,6 +21,8 @@ class CodeGenerator(object):
                  class_names: Dict = None,
                  ignore_cols=None,
                  no_comments=False,
+                 auth_tables=None,
+                 password_columns=None
                  ):
         """
 
@@ -48,13 +50,15 @@ class CodeGenerator(object):
         self.__init_association_tables()
 
         # Iterate through the tables and create model classes when possible
-        self.models: List[ModelGenerator] = []
-        self.__init_models()
+        auth_tables = auth_tables or []
+        password_columns = password_columns or []
 
+        self.models: List[ModelGenerator] = []
         self.controllers: List[ControllerGenerator] = []
         self.repositories: List[RepositoryGenerator] = []
         self.schemas: List[SchemaGenerator] = []
         self.routes: List[RouteGenerator] = []
+        self.__init_models(auth_tables, password_columns)
         self.__init_controller()
         self.__init_repository()
         self.__init_schema()
@@ -77,7 +81,7 @@ class CodeGenerator(object):
         self.__render_objs(self.schemas, root_directory=root_directory)
         self.__render_objs(self.routes, root_directory=root_directory)
 
-    def __init_models(self):
+    def __init_models(self, auth_tables: List, password_columns: List):
         classes = {}
         for table in sorted(self.metadata.tables.values(), key=lambda t: (t.schema or '', t.name)):
             model = ModelGenerator(
@@ -85,6 +89,8 @@ class CodeGenerator(object):
                 ignore_cols=self._ignore_columns,
                 class_names=self.class_names,
                 association_tables=self.association_tables[table.name],
+                auth_tables=auth_tables,
+                password_columns=password_columns
             )
             classes[model.class_name] = model
             self.models.append(model)

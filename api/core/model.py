@@ -1,7 +1,5 @@
 from datetime import datetime
-
 from sqlalchemy import inspect
-
 from extensions import db
 
 

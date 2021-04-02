@@ -29,8 +29,8 @@ class Create${singular_pascal_case_model_name}Route(BaseRoute):
         return self.controller.create(data=data)
 
 
-@ns.route('/<int:id>')
-@ns.param('id', 'ID of ${singular_pascal_case_model_name}')
+@ns.route('/<int:_id>')
+@ns.param('_id', 'ID of ${singular_pascal_case_model_name}')
 class ${singular_pascal_case_model_name}CommonRoute(BaseRoute):
     def get_controller(self):
         return ${singular_pascal_case_model_name}Controller

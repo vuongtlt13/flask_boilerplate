@@ -29,8 +29,8 @@ class CreateCompanyRoute(BaseRoute):
         return self.controller.create(data=data)
 
 
-@ns.route('/<int:id>')
-@ns.param('id', 'ID of Company')
+@ns.route('/<int:_id>')
+@ns.param('_id', 'ID of Company')
 class CompanyCommonRoute(BaseRoute):
     def get_controller(self):
         return CompanyController

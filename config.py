@@ -24,6 +24,8 @@ class Config(object):
                    f'{(f"+{SQLALCHEMY_DRIVER}", "")[SQLALCHEMY_DRIVER is None or SQLALCHEMY_DRIVER == ""]}' \
                    f'://{SQLALCHEMY_USERNAME}:{SQLALCHEMY_PASSWORD}@{SQLALCHEMY_HOSTNAME}:{SQLALCHEMY_PORT}/{SQLALCHEMY_DBNAME}'
     SERVER_NAME = f'{os.getenv("APP_HOST", "localhost")}:{os.getenv("APP_PORT", 5000)}'
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SECURITY_PASSWORD_SALT = os.environ.get("SECURITY_PASSWORD_SALT")
 
 
 class ProductionConfig(Config):

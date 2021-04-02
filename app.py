@@ -1,12 +1,12 @@
 from flask import Flask
 
 from config import get_config
-from extensions import db, list_route_cli, migrate, api, excpetion, vgenerator
+from extensions import db, list_route_cli, migrate, api, excpetion, vgenerator, secret_generator_cli
 try:
     import api as api_route
-except:
+except Exception as e:
+    print(e)
     pass
-
 
 
 def create_app(conf=None) -> Flask:
@@ -22,14 +22,8 @@ def create_app(conf=None) -> Flask:
     if conf.DEBUG:
         vgenerator.init_app(app)
         list_route_cli.init_app(app)
+        secret_generator_cli.init_app(app)
 
-    with app.app_context():
-        # vgenerator.code_gen(tables=["apps"], ignore_tables=['alembic_version'], root_directory="api")
-        # vgenerator.code_gen(tables=["companies"], ignore_tables=['alembic_version'], root_directory="api")
-        # vgenerator.code_gen(tables=["services"], ignore_tables=['alembic_version'], root_directory="api")
-        # vgenerator.code_gen(tables=["users"], ignore_tables=['alembic_version'], root_directory="api")
-        pass
-    # return
     return app
 
 

@@ -1,5 +1,5 @@
 import abc
-from typing import Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 from extensions import db
 
@@ -12,34 +12,38 @@ class BaseRepository:
     def model(self):
         raise NotImplemented
 
-    def find_by_id(self, id) -> Optional[db.Model]:
+    def find_by_id(self, _id) -> Optional[db.Model]:
         primary_column = self._model.primary_key()
         queries = {
-            primary_column: id
+            primary_column: _id
         }
         return self._model.query.filter_by(**queries).first()
 
-    def create(self, data: Dict) -> Optional[db.Model]:
-        new_record = self._model(**data)
-        db.session.add(new_record)
-        db.session.commit()
+    def create(self, data: Dict) -> Tuple[Optional[db.Model], Any]:
+        try:
+            new_record = self._model(**data)
+            db.session.add(new_record)
+            db.session.commit()
+            return new_record, None
+        except Exception as e:
+            return None, str(e)
 
-        return new_record
-
-    def update(self, id, data: Dict) -> Optional[db.Model]:
-        record = self.find_by_id(id=id)
+    def update(self, _id, data: Dict) -> Tuple[Optional[db.Model], Any]:
+        record = self.find_by_id(_id=_id)
         if record is None:
-            return record
+            return record, "not_found"
+        try:
+            for key, value in data.items():
+                setattr(record, key, value)
+            db.session.commit()
+            return record, None
+        except Exception as e:
+            return None, str(e)
 
-        for key, value in data.items():
-            setattr(record, key, value)
-        db.session.commit()
-        return record
-
-    def delete(self, id):
+    def delete(self, _id):
         primary_column = self._model.primary_key()
         queries = {
-            primary_column: id
+            primary_column: _id
         }
         result = self._model.query.filter_by(**queries).delete()
         db.session.commit()

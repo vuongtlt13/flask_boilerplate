@@ -29,8 +29,8 @@ class CreateAppRoute(BaseRoute):
         return self.controller.create(data=data)
 
 
-@ns.route('/<int:id>')
-@ns.param('id', 'ID of App')
+@ns.route('/<int:_id>')
+@ns.param('_id', 'ID of App')
 class AppCommonRoute(BaseRoute):
     def get_controller(self):
         return AppController

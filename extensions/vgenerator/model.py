@@ -12,12 +12,19 @@ class ModelGenerator(BaseGenerator):
     def output_filename(self):
         return "model"
 
-    def __init__(self, table: Table, association_tables: List, class_names: Dict, ignore_cols=None):
+    def __init__(self, table: Table, association_tables: List, class_names: Dict, ignore_cols=None,
+                 auth_tables=None, password_columns=None):
         self.class_name = utils.convert_to_class_name((class_names.get(table.name, None)) or table.name)
         super(ModelGenerator, self).__init__(self.class_name)
+        auth_tables = auth_tables or []
+        password_columns = password_columns or []
+
         self.table = table
         self.table_name = table.name
         self.schema = table.schema
+        self.is_auth = self.table_name in auth_tables
+        if not self.is_auth:
+            password_columns = []
         self.__pre_init()
         self.children = []
         self.ignore_cols = ignore_cols or []
@@ -29,9 +36,14 @@ class ModelGenerator(BaseGenerator):
         for column in table.columns:
             if column.name in self.ignore_cols:
                 continue
-            self.attributes[column.name] = ColumnGenerator(column)
+            self.attributes[column.name] = ColumnGenerator(column, password_columns)
 
         self.__init_relations(class_names)
+        self.has_password_column = False
+        for _, column in self.attributes.items():
+            if column.is_password_column:
+                self.has_password_column = True
+                break
 
     def template_file(self):
         return 'model.mako'

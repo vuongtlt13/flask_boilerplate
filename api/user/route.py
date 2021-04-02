@@ -29,8 +29,8 @@ class CreateUserRoute(BaseRoute):
         return self.controller.create(data=data)
 
 
-@ns.route('/<int:id>')
-@ns.param('id', 'ID of User')
+@ns.route('/<int:_id>')
+@ns.param('_id', 'ID of User')
 class UserCommonRoute(BaseRoute):
     def get_controller(self):
         return UserController

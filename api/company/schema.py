@@ -9,7 +9,7 @@ CompanySchema = api.model('Company', {
 })
 
 CompanyResponse = api.clone('CompanyResponse', ResponseSchema, {
-    "data": fields.Nested(CompanySchema)
+    "data": fields.Nested(CompanySchema, allow_null=True)
 })
 
 CreateCompanyRequest = api.model('CreateCompanyRequest', {

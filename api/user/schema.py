@@ -12,7 +12,7 @@ UserSchema = api.model('User', {
 })
 
 UserResponse = api.clone('UserResponse', ResponseSchema, {
-    "data": fields.Nested(UserSchema)
+    "data": fields.Nested(UserSchema, allow_null=True)
 })
 
 CreateUserRequest = api.model('CreateUserRequest', {

@@ -9,7 +9,7 @@ AppSchema = api.model('App', {
 })
 
 AppResponse = api.clone('AppResponse', ResponseSchema, {
-    "data": fields.Nested(AppSchema)
+    "data": fields.Nested(AppSchema, allow_null=True)
 })
 
 CreateAppRequest = api.model('CreateAppRequest', {

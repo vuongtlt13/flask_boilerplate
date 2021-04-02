@@ -29,8 +29,8 @@ class CreateServiceRoute(BaseRoute):
         return self.controller.create(data=data)
 
 
-@ns.route('/<int:id>')
-@ns.param('id', 'ID of Service')
+@ns.route('/<int:_id>')
+@ns.param('_id', 'ID of Service')
 class ServiceCommonRoute(BaseRoute):
     def get_controller(self):
         return ServiceController

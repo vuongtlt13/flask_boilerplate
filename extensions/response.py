@@ -1,34 +1,27 @@
-import json
-from flask import make_response
 from flask_restx import fields
 
 from extensions import api
 
 
-def success(message="", data=None, marshal_with: bool = True):
+def success(message="", data=None):
     resp_data = {
         'status': True,
         'data': data,
         'message': message,
         'error': None
     }
-    if marshal_with:
-        return resp_data
-
-    return make_response(json.dumps(resp_data), 200)
+    return resp_data, 200
 
 
-def error(message="", data=None, error=None, code: int = 400, marshal_with: bool = True):
+def error(message="", data=None, error=None, code: int = 400):
     resp_data = {
         'status': False,
         'data': data,
         'message': message,
         'error': error
     }
-    if marshal_with:
-        return resp_data
 
-    return make_response(json.dumps(resp_data), code)
+    return resp_data, code
 
 
 ResponseSchema = api.model('ResponseSchema', {

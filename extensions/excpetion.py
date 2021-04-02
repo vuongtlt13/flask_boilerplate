@@ -16,14 +16,14 @@ def init_app(app: Flask):
             code = e.orig.args[0]
             if code == DATABASE_DUPLICATE_ERROR_CODE:
                 detail = e.orig.args[1]
-                return response.error(error=detail, code=400, marshal_with=False)
+                return response.error(error=detail, code=400)
 
         if app.config['DEBUG']:
             error = str(e)
         else:
             error = "Unknown error!"
         traceback.print_exc()
-        return response.error(error=error, code=400, marshal_with=False)
+        return response.error(error=error, code=400)
 
     @app.errorhandler(InternalServerError)
     def handle_500(e):

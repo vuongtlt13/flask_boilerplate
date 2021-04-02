@@ -3,6 +3,9 @@
 from typing import Dict
 from flask import request
 from api.core import BaseController, constants, utils
+%if has_password_column:
+from werkzeug.security import generate_password_hash
+%endif
 from api.${singular_snake_case_model_name}.repository import ${singular_pascal_case_model_name}Repository
 
 
@@ -29,10 +32,32 @@ class ${singular_pascal_case_model_name}Controller(BaseController):
         return self.success(data=result)
 
     def create(self, data: Dict):
-        return self.success(data=self.${singular_snake_case_model_name}_repository.create(data=data).as_dict())
+        %if has_password_column:
+            % for column in password_columns:
+        data['${column}'] = generate_password_hash(data['${column}'])
+            % endfor
+        %endif
+        new_${singular_snake_case_model_name}, errors = self.${singular_snake_case_model_name}_repository.create(data=data)
+        if errors:
+            return self.error(error=errors)
+
+        return self.success(data=new_${singular_snake_case_model_name}.as_dict())
 
     def update(self, _id, data: Dict):
-        ${singular_snake_case_model_name} = self.${singular_snake_case_model_name}_repository.update(_id, data=data)
+        %if has_password_column:
+            % for column in password_columns:
+        ${column} = data.get('${column}', None)
+        if ${column}:
+            data['${column}'] = generate_password_hash(data['${column}'])
+        else:
+            data.pop('${column}', None)
+            % endfor
+        %endif
+
+        ${singular_snake_case_model_name}, errors = self.${singular_snake_case_model_name}_repository.update(_id, data=data)
+        if errors:
+            return self.error(error=errors)
+
         if ${singular_snake_case_model_name}:
             ${singular_snake_case_model_name} = ${singular_snake_case_model_name}.as_dict()
         return self.success(data=${singular_snake_case_model_name})

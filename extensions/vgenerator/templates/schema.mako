@@ -10,7 +10,7 @@ ${singular_pascal_case_model_name}Schema = api.model('${singular_pascal_case_mod
 })
 
 ${singular_pascal_case_model_name}Response = api.clone('${singular_pascal_case_model_name}Response', ResponseSchema, {
-    "data": fields.Nested(${singular_pascal_case_model_name}Schema)
+    "data": fields.Nested(${singular_pascal_case_model_name}Schema, allow_null=True)
 })
 
 Create${singular_pascal_case_model_name}Request = api.model('Create${singular_pascal_case_model_name}Request', {

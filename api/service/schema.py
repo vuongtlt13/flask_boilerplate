@@ -11,7 +11,7 @@ ServiceSchema = api.model('Service', {
 })
 
 ServiceResponse = api.clone('ServiceResponse', ResponseSchema, {
-    "data": fields.Nested(ServiceSchema)
+    "data": fields.Nested(ServiceSchema, allow_null=True)
 })
 
 CreateServiceRequest = api.model('CreateServiceRequest', {
