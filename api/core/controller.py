@@ -25,8 +25,8 @@ class BaseController:
     def delete(self, _id):
         pass
 
-    def success(self, message="", data=None):
-        return response.success(message=message, data=data)
+    def success(self, data=None):
+        return response.success(data=data)
 
-    def error(self, message="", data=None, error=None):
-        return response.error(message=message, data=data, error=error)
+    def error(self, data=None, error=None):
+        return response.error(data=data, error=error)

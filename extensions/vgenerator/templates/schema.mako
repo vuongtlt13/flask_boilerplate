@@ -30,5 +30,5 @@ ${singular_snake_case_model_name}_paginate_model = api.clone('${singular_snake_c
 })
 
 ${singular_pascal_case_model_name}PaginateResponse = api.clone('${singular_pascal_case_model_name}PaginateResponse', PaginateResponseSchema, {
-    'data': fields.Nested(${singular_snake_case_model_name}_paginate_model),
+    'data': fields.Nested(${singular_snake_case_model_name}_paginate_model, allow_null=True),
 })

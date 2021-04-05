@@ -25,5 +25,5 @@ company_paginate_model = api.clone('company_paginate_model', paginate_model, {
 })
 
 CompanyPaginateResponse = api.clone('CompanyPaginateResponse', PaginateResponseSchema, {
-    'data': fields.Nested(company_paginate_model),
+    'data': fields.Nested(company_paginate_model, allow_null=True),
 })

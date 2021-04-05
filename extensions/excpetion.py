@@ -1,22 +1,43 @@
 import traceback
 
 from flask import Flask
-from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import InternalServerError
 
 from extensions import response
 
-DATABASE_DUPLICATE_ERROR_CODE = 1062
+
+class VBaseException(Exception):
+    response_code = 400
+
+    def __init__(self, message: str, error_code: int = None):
+        self.message = message
+        self.error_code = error_code or self.response_code
+
+
+class DatabaseDuplicateException(VBaseException):
+    pass
+
+
+class AccessTokenInvalid(VBaseException):
+    response_code = 401
+
+
+class AccessTokenMissing(VBaseException):
+    response_code = 401
+
+
+class AccessTokenExpired(VBaseException):
+    response_code = 403
 
 
 def init_app(app: Flask):
     @app.errorhandler(Exception)
     def handle_exception(e):
-        if isinstance(e, IntegrityError):
-            code = e.orig.args[0]
-            if code == DATABASE_DUPLICATE_ERROR_CODE:
-                detail = e.orig.args[1]
-                return response.error(error=detail, code=400)
+        if isinstance(e, VBaseException):
+            return response.error(code=e.response_code, error={
+                "code": e.error_code,
+                "message": e.message
+            })
 
         if app.config['DEBUG']:
             error = str(e)
@@ -32,4 +53,4 @@ def init_app(app: Flask):
         else:
             error = "Unknown error!"
         traceback.print_exc()
-        return response.error(code=500, error=error, marshal_with=False)
+        return response.error(code=500, error=error)

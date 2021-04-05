@@ -39,7 +39,7 @@ class CodeGenerator(object):
         # exclude these column names from consideration when generating association tables
         self.class_names = class_names if class_names else {}
         self.ignore_tables = ignore_tables if ignore_tables else []
-        self.ignore_tables = list(set(self.ignore_tables + ['alembic_version']))
+        self.ignore_tables = list(set(self.ignore_tables + ['alembic_version', 'seeds']))
         self.tables = tables
         self.metadata = metadata
         self._ignore_columns = ignore_cols or [] + utils.get_timestamps_columns()

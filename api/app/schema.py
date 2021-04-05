@@ -25,5 +25,5 @@ app_paginate_model = api.clone('app_paginate_model', paginate_model, {
 })
 
 AppPaginateResponse = api.clone('AppPaginateResponse', PaginateResponseSchema, {
-    'data': fields.Nested(app_paginate_model),
+    'data': fields.Nested(app_paginate_model, allow_null=True),
 })

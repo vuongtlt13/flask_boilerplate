@@ -3,21 +3,19 @@ from flask_restx import fields
 from extensions import api
 
 
-def success(message="", data=None):
+def success(data=None):
     resp_data = {
         'status': True,
         'data': data,
-        'message': message,
         'error': None
     }
     return resp_data, 200
 
 
-def error(message="", data=None, error=None, code: int = 400):
+def error(data=None, error=None, code: int = 400):
     resp_data = {
         'status': False,
         'data': data,
-        'message': message,
         'error': error
     }
 
@@ -27,7 +25,6 @@ def error(message="", data=None, error=None, code: int = 400):
 ResponseSchema = api.model('ResponseSchema', {
     'status': fields.Boolean,
     'data': fields.Raw,
-    'message': fields.String,
     'error': fields.String
 })
 

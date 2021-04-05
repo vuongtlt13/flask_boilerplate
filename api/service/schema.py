@@ -31,5 +31,5 @@ service_paginate_model = api.clone('service_paginate_model', paginate_model, {
 })
 
 ServicePaginateResponse = api.clone('ServicePaginateResponse', PaginateResponseSchema, {
-    'data': fields.Nested(service_paginate_model),
+    'data': fields.Nested(service_paginate_model, allow_null=True),
 })

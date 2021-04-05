@@ -1,7 +1,7 @@
 from flask import Flask
 
 from config import get_config
-from extensions import db, list_route_cli, migrate, api, excpetion, vgenerator, secret_generator_cli
+from extensions import db, migrate, api, excpetion, vgenerator, secret_generator_cli, seeds
 try:
     import api as api_route
 except Exception as e:
@@ -21,7 +21,7 @@ def create_app(conf=None) -> Flask:
     excpetion.init_app(app)
     if conf.DEBUG:
         vgenerator.init_app(app)
-        list_route_cli.init_app(app)
+        seeds.init_app(app)
         secret_generator_cli.init_app(app)
 
     return app
