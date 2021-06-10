@@ -50,6 +50,7 @@ class ModelGenerator(BaseGenerator):
 
     def get_variables(self) -> Dict:
         return {
+            "is_auth_model": self.is_auth,
             "class_name": self.class_name,
             "table_name": self.table.name,
             "columns": self.render_columns(),

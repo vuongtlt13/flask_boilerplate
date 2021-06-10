@@ -75,11 +75,21 @@ class CodeGenerator(object):
                 self.association_tables[tablename].append(table)
 
     def render(self, root_directory="."):
+        print("Generating models...", end="")
         self.__render_objs(self.models, root_directory=root_directory)
+        print("DONE")
+        print("Generating controllers...", end="")
         self.__render_objs(self.controllers, root_directory=root_directory)
+        print("DONE")
+        print("Generating repositories...", end="")
         self.__render_objs(self.repositories, root_directory=root_directory)
+        print("DONE")
+        print("Generating schemas...", end="")
         self.__render_objs(self.schemas, root_directory=root_directory)
+        print("DONE")
+        print("Generating routes...", end="")
         self.__render_objs(self.routes, root_directory=root_directory)
+        print("DONE")
 
     def __init_models(self, auth_tables: List, password_columns: List):
         classes = {}

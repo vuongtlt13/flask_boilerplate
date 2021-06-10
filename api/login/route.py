@@ -10,12 +10,12 @@ __all__ = [
 ]
 
 
-@ns.route('/')
+@ns.route('/login')
 class LoginCommonRoute(BaseRoute):
     def get_controller(self):
         return LoginController
 
-    @ns.doc('login by username, password')
+    @ns.doc('login by email, password')
     @ns.marshal_with(LoginResponse)
     @ns.expect(LoginRequest)
     def post(self):

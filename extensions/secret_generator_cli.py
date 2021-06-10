@@ -14,14 +14,14 @@ def init_app(app: Flask):
         dotenv_file = dotenv.find_dotenv()
         dotenv.load_dotenv(dotenv_file)
 
-        os.environ["SECRET_KEY"] = secrets.token_urlsafe()
-        print(os.environ['SECRET_KEY'])
+        os.environ["JWT_SECRET_KEY"] = secrets.token_urlsafe()
+        print(os.environ['JWT_SECRET_KEY'])
 
         # os.environ["SECURITY_PASSWORD_SALT"] = str(secrets.SystemRandom().getrandbits(128))
         # print(os.environ['SECURITY_PASSWORD_SALT'])
 
         # Write changes to .env file.
-        dotenv.set_key(dotenv_file, "SECRET_KEY", os.environ["SECRET_KEY"])
+        dotenv.set_key(dotenv_file, "JWT_SECRET_KEY", os.environ["JWT_SECRET_KEY"])
         # dotenv.set_key(dotenv_file, "SECURITY_PASSWORD_SALT", os.environ["SECURITY_PASSWORD_SALT"])
 
         print("Secrets generated successfully!")

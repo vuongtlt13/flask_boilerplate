@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -18,14 +19,12 @@ class Config(object):
                               f'://{SQLALCHEMY_USERNAME}:{SQLALCHEMY_PASSWORD}@{SQLALCHEMY_HOSTNAME}:{SQLALCHEMY_PORT}/{SQLALCHEMY_DBNAME}'
 
     # Flask Config
+    FLASK_ENV = os.getenv("FLASK_ENV", 'production')
     DEBUG = False
     TESTING = False
-    DATABASE_URI = f'{SQLALCHEMY_DIALECT}' \
-                   f'{(f"+{SQLALCHEMY_DRIVER}", "")[SQLALCHEMY_DRIVER is None or SQLALCHEMY_DRIVER == ""]}' \
-                   f'://{SQLALCHEMY_USERNAME}:{SQLALCHEMY_PASSWORD}@{SQLALCHEMY_HOSTNAME}:{SQLALCHEMY_PORT}/{SQLALCHEMY_DBNAME}'
+    DATABASE_URI = SQLALCHEMY_DATABASE_URI
     SERVER_NAME = f'{os.getenv("APP_HOST", "localhost")}:{os.getenv("APP_PORT", 5000)}'
-    SECRET_KEY = os.environ.get("SECRET_KEY")
-    SECURITY_PASSWORD_SALT = os.environ.get("SECURITY_PASSWORD_SALT")
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 
 
 class ProductionConfig(Config):
@@ -35,6 +34,18 @@ class ProductionConfig(Config):
 class DevelopmentConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     DEBUG = True
+
+    # Design SQLALCHEMY Config
+    DESIGN_SQLALCHEMY_DIALECT = os.getenv("DESIGN_SQLALCHEMY_DIALECT", "mysql")
+    DESIGN_SQLALCHEMY_DRIVER = os.getenv("DESIGN_SQLALCHEMY_DRIVER", "pymysql")
+    DESIGN_SQLALCHEMY_HOSTNAME = os.getenv("DESIGN_SQLALCHEMY_HOSTNAME", "localhost")
+    DESIGN_SQLALCHEMY_PORT = os.getenv("DESIGN_SQLALCHEMY_PORT", 3306)
+    DESIGN_SQLALCHEMY_DBNAME = os.getenv("DESIGN_SQLALCHEMY_DBNAME", "design_table")
+    DESIGN_SQLALCHEMY_USERNAME = os.getenv("DESIGN_SQLALCHEMY_USERNAME", "root")
+    DESIGN_SQLALCHEMY_PASSWORD = os.getenv("DESIGN_SQLALCHEMY_PASSWORD", "root")
+    DESIGN_SQLALCHEMY_DATABASE_URI = f'{DESIGN_SQLALCHEMY_DIALECT}' \
+                                     f'{(f"+{DESIGN_SQLALCHEMY_DRIVER}", "")[DESIGN_SQLALCHEMY_DRIVER is None or DESIGN_SQLALCHEMY_DRIVER == ""]}' \
+                                     f'://{DESIGN_SQLALCHEMY_USERNAME}:{DESIGN_SQLALCHEMY_PASSWORD}@{DESIGN_SQLALCHEMY_HOSTNAME}:{DESIGN_SQLALCHEMY_PORT}/{DESIGN_SQLALCHEMY_DBNAME}'
 
 
 class TestingConfig(Config):

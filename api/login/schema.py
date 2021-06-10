@@ -12,6 +12,6 @@ LoginResponse = api.clone('LoginResponse', ResponseSchema, {
 })
 
 LoginRequest = api.model('LoginRequest', {
-    'username': fields.String(readOnly=False, required=True),
+    'email': fields.String(readOnly=False, required=True),
     'password': fields.String(readOnly=False, required=True),
 })

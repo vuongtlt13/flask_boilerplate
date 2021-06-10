@@ -1,4 +1,4 @@
-from api.core import auth
+from flask_jwt_extended import jwt_required
 from api.core.route import BaseRoute
 from api.${singular_snake_case_model_name}.controller import ${singular_pascal_case_model_name}Controller
 from api.${singular_snake_case_model_name}.schema import Create${singular_pascal_case_model_name}Request, Update${singular_pascal_case_model_name}Request, ${singular_pascal_case_model_name}PaginateResponse, ${singular_pascal_case_model_name}Response
@@ -19,14 +19,14 @@ class Create${singular_pascal_case_model_name}Route(BaseRoute):
 
     @ns.doc("list_${plural_snake_case_model_name}")
     @ns.marshal_with(${singular_pascal_case_model_name}PaginateResponse)
-    @auth.login_required
+    @jwt_required()
     def get(self):
         return self.controller.get()
 
     @ns.doc("create_new_${singular_snake_case_model_name}")
     @ns.marshal_with(${singular_pascal_case_model_name}Response)
     @ns.expect(Create${singular_pascal_case_model_name}Request)
-    @auth.login_required
+    @jwt_required()
     def post(self):
         data = api.payload
         return self.controller.create(data=data)
@@ -40,19 +40,19 @@ class ${singular_pascal_case_model_name}CommonRoute(BaseRoute):
 
     @ns.doc('get_${singular_snake_case_model_name}_by_id')
     @ns.marshal_with(${singular_pascal_case_model_name}Response)
-    @auth.login_required
+    @jwt_required()
     def get(self, _id):
         return self.controller.get(_id)
 
     @ns.doc("update_${singular_snake_case_model_name}_by_id")
     @ns.marshal_with(${singular_pascal_case_model_name}Response)
     @ns.expect(Update${singular_pascal_case_model_name}Request)
-    @auth.login_required
+    @jwt_required()
     def put(self, _id):
         data = api.payload
         return self.controller.update(_id=_id, data=data)
 
     @ns.doc("delete_${singular_snake_case_model_name}_by_id")
-    @auth.login_required
+    @jwt_required()
     def delete(self, _id):
         return self.controller.delete(_id=_id)
