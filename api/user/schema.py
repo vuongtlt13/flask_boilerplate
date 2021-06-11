@@ -8,6 +8,10 @@ UserSchema = api.model('User', {
     'email': fields.String(readOnly=False, required=True),
     'password': fields.String(readOnly=False, required=True),
     'is_active': fields.Integer(readOnly=False, required=True),
+    'user_type': fields.Integer(readOnly=False, required=True),
+    'name': fields.String(readOnly=False, required=True),
+    'phone_number': fields.String(readOnly=False, required=False),
+    'address': fields.String(readOnly=False, required=False),
 })
 
 UserResponse = api.clone('UserResponse', ResponseSchema, {
@@ -18,12 +22,20 @@ CreateUserRequest = api.model('CreateUserRequest', {
     'email': fields.String(readOnly=False, required=True),
     'password': fields.String(readOnly=False, required=True),
     'is_active': fields.Integer(readOnly=False, required=True),
+    'user_type': fields.Integer(readOnly=False, required=True),
+    'name': fields.String(readOnly=False, required=True),
+    'phone_number': fields.String(readOnly=False, required=False),
+    'address': fields.String(readOnly=False, required=False),
 })
 
 UpdateUserRequest = api.model('UpdateUserRequest', {
     'email': fields.String(readOnly=False, required=True),
     'password': fields.String(readOnly=False, required=True),
     'is_active': fields.Integer(readOnly=False, required=True),
+    'user_type': fields.Integer(readOnly=False, required=True),
+    'name': fields.String(readOnly=False, required=True),
+    'phone_number': fields.String(readOnly=False, required=False),
+    'address': fields.String(readOnly=False, required=False),
 })
 
 user_paginate_model = api.clone('user_paginate_model', paginate_model, {
