@@ -36,7 +36,7 @@ class BaseGenerator(object):
 
     def get_outfile(self, root_directory: str, class_name: str):
         if self.output_filename():
-            directory = f'{root_directory}/{class_name.lower()}'
+            directory = f'{root_directory}/{inflection.underscore(class_name)}'
             file_path = f"{directory}/{self.output_filename()}.py"
             if not os.path.exists(directory):
                 os.mkdir(directory)
