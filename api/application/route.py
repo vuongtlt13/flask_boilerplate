@@ -1,8 +1,10 @@
 from flask_jwt_extended import jwt_required
+
+from api.core.middlewares.token_verify import TokenVerify
 from api.core.route import BaseRoute
 from api.application.controller import ApplicationController
 from api.application.schema import CreateApplicationRequest, UpdateApplicationRequest, ApplicationPaginateResponse, ApplicationResponse
-from extensions import api
+from extensions import api, middleware_manager
 
 ns = api.namespace('applications', description='Application operations')
 
@@ -13,20 +15,19 @@ __all__ = [
 
 
 @ns.route('')
+@middleware_manager.route_middleware(TokenVerify)
 class CreateApplicationRoute(BaseRoute):
     def get_controller(self):
         return ApplicationController
 
     @ns.doc("list_applications")
     @ns.marshal_with(ApplicationPaginateResponse)
-    @jwt_required()
     def get(self):
         return self.controller.get()
 
     @ns.doc("create_new_application")
     @ns.marshal_with(ApplicationResponse)
     @ns.expect(CreateApplicationRequest)
-    @jwt_required()
     def post(self):
         data = api.payload
         return self.controller.create(data=data)

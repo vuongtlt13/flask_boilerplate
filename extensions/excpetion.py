@@ -1,9 +1,7 @@
 import traceback
-
-from flask import Flask
+from flask_jwt_extended.exceptions import NoAuthorizationError
+from flask_restx import Api
 from werkzeug.exceptions import InternalServerError
-
-from extensions import response
 
 
 class VBaseException(Exception):
@@ -18,39 +16,22 @@ class DatabaseDuplicateException(VBaseException):
     pass
 
 
-class AccessTokenInvalid(VBaseException):
-    response_code = 401
+def register_handle_exception(api: Api):
+    from extensions import response
 
-
-class AccessTokenMissing(VBaseException):
-    response_code = 401
-
-
-class AccessTokenExpired(VBaseException):
-    response_code = 403
-
-
-def init_app(app: Flask):
-    @app.errorhandler(Exception)
+    @api.errorhandler(Exception)
     def handle_exception(e):
         if isinstance(e, VBaseException):
-            return response.error(code=e.response_code, error={
-                "code": e.error_code,
-                "message": e.message
-            })
+            return response.error(code=e.response_code, message=e.message)
+        elif isinstance(e, NoAuthorizationError):
+            return response.error(code=401, message=str(e))
 
-        if app.config['DEBUG']:
-            error = str(e)
-        else:
-            error = "Unknown error!"
+        error = "Unknown error!"
         traceback.print_exc()
-        return response.error(error=error, code=400)
+        return response.error(message=error, code=400)
 
-    @app.errorhandler(InternalServerError)
+    @api.errorhandler(InternalServerError)
     def handle_500(e):
-        if app.config['DEBUG']:
-            error = str(e)
-        else:
-            error = "Unknown error!"
+        error = "Unknown error!"
         traceback.print_exc()
-        return response.error(code=500, error=error)
+        return response.error(code=500, message=error)
