@@ -10,6 +10,9 @@ from extensions import db
 
 class ${class_name}(BaseModel):
     __tablename__ = "${table_name}"
+    __table_args__ = {
+        'extend_existing': True
+    }
 % for column in columns:
     ${column}
 % endfor

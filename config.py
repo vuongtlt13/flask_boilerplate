@@ -21,6 +21,7 @@ class Config(object):
     # Flask Config
     FLASK_ENV = os.getenv("FLASK_ENV", 'production')
     DEBUG = False
+    FLASK_DEBUG = False
     TESTING = False
     DATABASE_URI = SQLALCHEMY_DATABASE_URI
     SERVER_NAME = f'{os.getenv("APP_HOST", "localhost")}:{os.getenv("APP_PORT", 5000)}'
@@ -47,6 +48,9 @@ class DevelopmentConfig(Config):
                                      f'{(f"+{DESIGN_SQLALCHEMY_DRIVER}", "")[DESIGN_SQLALCHEMY_DRIVER is None or DESIGN_SQLALCHEMY_DRIVER == ""]}' \
                                      f'://{DESIGN_SQLALCHEMY_USERNAME}:{DESIGN_SQLALCHEMY_PASSWORD}@{DESIGN_SQLALCHEMY_HOSTNAME}:{DESIGN_SQLALCHEMY_PORT}/{DESIGN_SQLALCHEMY_DBNAME}'
 
+    # Flask
+    FLASK_DEBUG = True
+
 
 class TestingConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -55,11 +59,11 @@ class TestingConfig(Config):
 
 config_map = {
     "production": ProductionConfig,
-    "develop": DevelopmentConfig,
+    "development": DevelopmentConfig,
     "test": TestingConfig
 }
 
 
 def get_config(mode: str = None):
-    mode = (mode or os.getenv("APP_MODE", "develop")).lower()
+    mode = (mode or os.getenv("FLASK_ENV", "development")).lower()
     return config_map.get(mode, DevelopmentConfig)

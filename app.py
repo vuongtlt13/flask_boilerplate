@@ -6,7 +6,6 @@ from extensions import db, migrate, api, code_generator, secret_generator_cli, s
 try:
     import api as api_route
 except Exception as e:
-    raise
     print(e)
     pass
 
