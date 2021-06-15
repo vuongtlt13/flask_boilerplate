@@ -12,7 +12,7 @@ class TokenVerify(BaseMiddleware):
 
     def handle(self, request: Request):
         verify_jwt_in_request(*self.args, **self.kwargs)
-        from user.model import User
+        from api.user.model import User
         user: User = current_user
         if not user.is_active:
             raise UserBlockedException("User blocked!")

@@ -20,6 +20,10 @@ class UserBlockedException(VBaseException):
     response_code = 403
 
 
+class PermissionDenied(VBaseException):
+    response_code = 403
+
+
 def register_handle_exception(api: Api):
     from extensions import response
 
