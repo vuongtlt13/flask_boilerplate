@@ -22,7 +22,8 @@ class CodeGenerator(object):
                  ignore_cols=None,
                  no_comments=False,
                  auth_tables=None,
-                 password_columns=None
+                 password_columns=None,
+                 skips=None
                  ):
         """
 
@@ -42,6 +43,9 @@ class CodeGenerator(object):
         self.ignore_tables = list(set(self.ignore_tables + ['alembic_version', 'seeds']))
         self.tables = tables
         self.metadata = metadata
+        if skips is None:
+            skips = []
+        self.skips = skips
         self._ignore_columns = ignore_cols or [] + utils.get_timestamps_columns()
 
         self.no_comments = no_comments
@@ -75,21 +79,30 @@ class CodeGenerator(object):
                 self.association_tables[tablename].append(table)
 
     def render(self, root_directory="."):
-        print("Generating models...", end="")
-        self.__render_objs(self.models, root_directory=root_directory)
-        print("DONE")
-        print("Generating controllers...", end="")
-        self.__render_objs(self.controllers, root_directory=root_directory)
-        print("DONE")
-        print("Generating repositories...", end="")
-        self.__render_objs(self.repositories, root_directory=root_directory)
-        print("DONE")
-        print("Generating schemas...", end="")
-        self.__render_objs(self.schemas, root_directory=root_directory)
-        print("DONE")
-        print("Generating routes...", end="")
-        self.__render_objs(self.routes, root_directory=root_directory)
-        print("DONE")
+        if "model" not in self.skips:
+            print("Generating models...", end="")
+            self.__render_objs(self.models, root_directory=root_directory)
+            print("DONE")
+
+        if "controller" not in self.skips:
+            print("Generating controllers...", end="")
+            self.__render_objs(self.controllers, root_directory=root_directory)
+            print("DONE")
+
+        if "repository" not in self.skips:
+            print("Generating repositories...", end="")
+            self.__render_objs(self.repositories, root_directory=root_directory)
+            print("DONE")
+
+        if "schema" not in self.skips:
+            print("Generating schemas...", end="")
+            self.__render_objs(self.schemas, root_directory=root_directory)
+            print("DONE")
+
+        if "route" not in self.skips:
+            print("Generating routes...", end="")
+            self.__render_objs(self.routes, root_directory=root_directory)
+            print("DONE")
 
     def __init_models(self, auth_tables: List, password_columns: List):
         classes = {}
