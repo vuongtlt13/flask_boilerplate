@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 
 from config import get_config
 from extensions import db, migrate, api, code_generator, secret_generator_cli, seeds, jwt, middleware_manager
@@ -22,6 +23,7 @@ def create_app(conf=None) -> Flask:
     api.init_app(app)
     middleware_manager.init_app(app)
     jwt.init_app(app)
+    CORS(app)
     secret_generator_cli.init_app(app)
     if conf.DEBUG:
         code_generator.init_app(app)

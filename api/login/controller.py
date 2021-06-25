@@ -23,4 +23,4 @@ class LoginController:
                     return response.success({
                         "access_token": access_token
                     })
-        return response.error(error="email or password is invalid", code=401)
+        return response.error(message="email or password is invalid", code=400)
